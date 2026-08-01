@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Chương 1: Cân bằng hoá học</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f0f7ff;
+        }
+        .chem-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .question-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        .option-label {
+            display: block;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+        }
+        .option-label:hover {
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
+        }
+        input[type="radio"]:checked + .option-label,
+        input[type="checkbox"]:checked + .option-label {
+            background-color: #bae7ff;
+            border-color: #40a9ff;
+            font-weight: 500;
+        }
+        .short-answer-input {
+            width: 120px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 1.1rem;
+        }
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+        }
+        .incorrect-answer {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .selected-incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 24px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 12px;
+            animation: slideIn 0.3s;
+        }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        @keyframes slideIn { from {transform: translateY(-50px);} to {transform: translateY(0);} }
+        .palette-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #d9d9d9;
+            background-color: #fafafa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .palette-btn:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
+        }
+        .palette-btn.answered {
+            background-color: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        .palette-btn.current {
+            border-color: #ff4d4f;
+            background-color: #fff1f0;
+            color: #ff4d4f;
+            transform: scale(1.1);
+            box-shadow: 0 0 5px rgba(255, 77, 79, 0.5);
+        }
+        .tf-label {
+            border: 1px solid #d1d5db;
+            transition: all 0.2s ease;
+        }
+        .tf-label:hover {
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
+        }
+        input[type="radio"]:checked + .tf-label {
+            background-color: #bae7ff;
+            border-color: #40a9ff;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Container chính -->
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <!-- Màn hình bắt đầu -->
+        <div id="start-screen">
+            <div class="text-center p-8 bg-white rounded-xl shadow-lg">
+                <svg class="chem-icon mx-auto w-16 h-16 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <h1 class="text-3xl font-bold text-blue-700 mt-4">Ôn tập chương 1. Cân bằng hoá học</h1>
+                <p class="text-lg text-gray-600 mt-2">(Hoá học 11 - Chân trời sáng tạo)</p>
+                <p class="text-md text-gray-500 mt-4 font-medium">Thời gian làm bài: 50 phút</p>
+                
+                <div class="mt-8 max-w-md mx-auto">
+                    <input type="text" id="student-name" placeholder="Nhập họ và tên" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <input type="text" id="student-class" placeholder="Nhập lớp" class="w-full px-4 py-3 border border-gray-300 rounded-lg mt-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+
+                <p class="mt-8 font-semibold text-gray-700">Chọn bộ đề để bắt đầu:</p>
+                <div class="flex justify-center space-x-4 mt-4">
+                    <button onclick="startTest(1)" class="px-8 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105 shadow-md">Đề 1</button>
+                    <button onclick="startTest(2)" class="px-8 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105 shadow-md">Đề 2</button>
+                    <button onclick="startTest(3)" class="px-8 py-3 bg-purple-500 text-white font-bold rounded-lg hover:bg-purple-600 transition-transform transform hover:scale-105 shadow-md">Đề 3</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Màn hình làm bài thi -->
+        <div id="test-screen" class="hidden">
+            <!-- Header của bài thi -->
+            <div class="sticky top-0 bg-white/80 backdrop-blur-sm p-4 rounded-b-xl shadow-md z-50 mb-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-blue-700">Đề số <span id="test-set-number"></span></h2>
+                    <div class="flex items-center space-x-4">
+                        <svg class="chem-icon w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span id="timer" class="text-xl font-bold text-red-500">50:00</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div id="question-palette" class="flex flex-wrap gap-2 justify-center">
+                        <!-- Các nút câu hỏi sẽ được chèn vào đây bởi JS -->
+                    </div>
+                    <p id="progress-text" class="text-sm text-right mt-2 text-gray-600">0/28 câu</p>
+                </div>
+            </div>
+            
+            <!-- Nội dung câu hỏi -->
+            <div id="questions-container"></div>
+
+            <!-- Nút điều hướng -->
+            <div class="flex justify-between mt-8">
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-6 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition">Câu trước</button>
+                <button onclick="confirmSubmission()" class="px-8 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition shadow-lg">Hoàn thành</button>
+                <button id="next-btn" onclick="navigateQuestion(1)" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">Câu tiếp</button>
+            </div>
+        </div>
+
+        <!-- Màn hình kết quả -->
+        <div id="result-screen" class="hidden">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center text-blue-700">Kết quả bài làm</h2>
+                <div id="result-summary" class="text-center my-6"></div>
+                <div id="feedback-table-container"></div>
+                <div class="text-center mt-8">
+                    <button onclick="restartTest()" class="px-8 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition">Làm lại</button>
+                </div>
+                <h3 class="text-xl font-bold mt-8 mb-4 text-gray-800">Xem lại đáp án:</h3>
+                <div id="review-container"></div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>Sản phẩm tạo bởi Cô Nguyễn Thị Minh Thanh – THPT Võ Thị Sáu – Tp.Hồ Chí Minh</p>
+        </footer>
+    </div>
+
+    <!-- Modal cảnh báo nộp bài thiếu -->
+    <div id="warning-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-yellow-600 mb-4">Cảnh báo</h3>
+            <p id="warning-text" class="mb-6"></p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="closeModal('warning-modal')" class="px-6 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition">Quay lại</button>
+                <button onclick="submitTest(true)" class="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition">Vẫn nộp</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal khôi phục bài làm -->
+    <div id="resume-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-blue-600 mb-4">Khôi phục bài làm?</h3>
+            <p class="mb-6">Chúng tôi tìm thấy một bài làm đang dang dở của bạn. Bạn có muốn tiếp tục không?</p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="discardProgress()" class="px-6 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition">Bỏ qua</button>
+                <button onclick="resumeProgress()" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">Tiếp tục</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DỮ LIỆU CÂU HỎI ---
+        const allQuestions = {
+            de1: [
+                // Phần 1: Trắc nghiệm 4 đáp án (18 câu)
+                { type: 'mcq', topic: 'Khái niệm CBHH', question: 'Phản ứng thuận nghịch là phản ứng', options: ['chỉ xảy ra theo một chiều nhất định.', 'xảy ra theo hai chiều ngược nhau trong cùng điều kiện.', 'có sự tham gia của chất xúc tác.', 'tỏa nhiệt mạnh.'], answer: 'B', explanation: 'Phản ứng thuận nghịch được biểu diễn bằng hai nửa mũi tên ngược chiều (⇌), cho thấy phản ứng có thể xảy ra theo cả chiều thuận (từ trái sang phải) và chiều nghịch (từ phải sang trái) trong cùng một điều kiện.' },
+                { type: 'mcq', topic: 'Khái niệm CBHH', question: 'Trạng thái cân bằng hóa học là trạng thái mà ở đó', options: ['phản ứng dừng lại hoàn toàn.', 'tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch.', 'nồng độ các chất tham gia bằng nồng độ sản phẩm.', 'phản ứng chỉ xảy ra theo chiều thuận.'], answer: 'B', explanation: 'Tại trạng thái cân bằng, các phản ứng thuận và nghịch vẫn tiếp tục xảy ra nhưng với tốc độ bằng nhau (v<sub>thuận</sub> = v<sub>nghịch</sub>), làm cho nồng độ các chất trong hệ không thay đổi. Đây là một cân bằng động.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Hằng số cân bằng K<sub>C</sub> của một phản ứng thuận nghịch chỉ phụ thuộc vào', options: ['nồng độ', 'áp suất', 'chất xúc tác', 'nhiệt độ'], answer: 'D', explanation: 'Với một phản ứng xác định, hằng số cân bằng K<sub>C</sub> chỉ phụ thuộc vào nhiệt độ. Nồng độ, áp suất và chất xúc tác có thể làm chuyển dịch cân bằng nhưng không làm thay đổi giá trị của K<sub>C</sub>.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Cho cân bằng: N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g). Biểu thức hằng số cân bằng K<sub>C</sub> là:', options: ['K<sub>C</sub> = [NH<sub>3</sub>] / ([N<sub>2</sub>][H<sub>2</sub>])', 'K<sub>C</sub> = [NH<sub>3</sub>]<sup>2</sup> / ([N<sub>2</sub>][H<sub>2</sub>]<sup>3</sup>)', 'K<sub>C</sub> = ([N<sub>2</sub>][H<sub>2</sub>]<sup>3</sup>) / [NH<sub>3</sub>]<sup>2</sup>', 'K<sub>C</sub> = [N<sub>2</sub>][H<sub>2</sub>] / [NH<sub>3</sub>]'], answer: 'B', explanation: 'Theo quy tắc, K<sub>C</sub> bằng tích nồng độ các chất sản phẩm mũ hệ số chia cho tích nồng độ các chất tham gia mũ hệ số. Do đó, K<sub>C</sub> = [NH<sub>3</sub>]<sup>2</sup> / ([N<sub>2</sub>][H<sub>2</sub>]<sup>3</sup>).' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Yếu tố nào sau đây không làm chuyển dịch cân bằng của hệ: 2SO<sub>2</sub>(g) + O<sub>2</sub>(g) ⇌ 2SO<sub>3</sub>(g)?', options: ['Nhiệt độ', 'Nồng độ O<sub>2</sub>', 'Áp suất', 'Chất xúc tác'], answer: 'D', explanation: 'Chất xúc tác làm tăng tốc độ cả phản ứng thuận và nghịch với mức độ như nhau, do đó giúp hệ nhanh đạt đến trạng thái cân bằng hơn nhưng không làm chuyển dịch cân bằng.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Cho cân bằng: CaCO<sub>3</sub>(s) ⇌ CaO(s) + CO<sub>2</sub>(g), ΔH > 0. Để tăng hiệu suất phân hủy CaCO<sub>3</sub>, ta cần', options: ['giảm nhiệt độ và tăng áp suất.', 'tăng nhiệt độ và giảm áp suất.', 'tăng nhiệt độ và tăng áp suất.', 'giảm nhiệt độ và giảm áp suất.'], answer: 'B', explanation: 'Theo nguyên lí Le Chatelier: Phản ứng thuận là phản ứng thu nhiệt (ΔH > 0) và làm tăng số mol khí (từ 0 lên 1 mol). Do đó, để cân bằng chuyển dịch theo chiều thuận (tăng hiệu suất), cần tăng nhiệt độ và giảm áp suất.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Đối với hệ cân bằng: N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g), ΔH < 0. Cân bằng sẽ chuyển dịch theo chiều thuận khi', options: ['tăng nhiệt độ.', 'giảm áp suất chung của hệ.', 'thêm khí NH<sub>3</sub> vào hệ.', 'giảm nhiệt độ.'], answer: 'D', explanation: 'Phản ứng thuận là tỏa nhiệt (ΔH < 0). Theo nguyên lí Le Chatelier, khi giảm nhiệt độ, cân bằng sẽ chuyển dịch theo chiều tỏa nhiệt, tức là chiều thuận.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Hệ cân bằng nào sau đây sẽ không bị chuyển dịch khi thay đổi áp suất?', options: ['N<sub>2</sub>(g) + O<sub>2</sub>(g) ⇌ 2NO(g)', '2SO<sub>2</sub>(g) + O<sub>2</sub>(g) ⇌ 2SO<sub>3</sub>(g)', 'N<sub>2</sub>O<sub>4</sub>(g) ⇌ 2NO<sub>2</sub>(g)', 'PCl<sub>5</sub>(g) ⇌ PCl<sub>3</sub>(g) + Cl<sub>2</sub>(g)'], answer: 'A', explanation: 'Sự thay đổi áp suất chỉ ảnh hưởng đến các cân bằng có sự thay đổi tổng số mol khí. Ở phản ứng A, tổng số mol khí trước và sau phản ứng bằng nhau (1 + 1 = 2), do đó áp suất không làm chuyển dịch cân bằng.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Giá trị K<sub>C</sub> lớn cho biết', options: ['phản ứng xảy ra rất chậm.', 'phản ứng không xảy ra.', 'sản phẩm được tạo thành nhiều ở trạng thái cân bằng.', 'chất tham gia còn dư nhiều ở trạng thái cân bằng.'], answer: 'C', explanation: 'K<sub>C</sub> = [Sản phẩm]/[Chất tham gia]. K<sub>C</sub> càng lớn chứng tỏ ở trạng thái cân bằng, nồng độ sản phẩm lớn hơn nhiều so với nồng độ chất tham gia, tức là phản ứng xảy ra với hiệu suất cao.' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Dung dịch chất nào sau đây không dẫn điện?', options: ['KCl trong nước.', 'H<sub>2</sub>SO<sub>4</sub> trong nước.', 'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (glucose) trong nước.', 'NaOH trong nước.'], answer: 'C', explanation: 'Dung dịch dẫn điện khi có các ion chuyển động tự do. Glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) là chất hữu cơ, khi tan trong nước tồn tại ở dạng phân tử, không phân li ra ion nên dung dịch không dẫn điện.' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Chất nào sau đây là chất điện li yếu?', options: ['H<sub>2</sub>SO<sub>4</sub>', 'CH<sub>3</sub>COOH', 'Ba(OH)<sub>2</sub>', 'NaCl'], answer: 'B', explanation: 'CH<sub>3</sub>COOH (acetic acid) là một acid yếu, chỉ phân li một phần ra ion trong dung dịch. Các chất còn lại là acid mạnh, base mạnh và muối, đều là chất điện li mạnh.' },
+                { type: 'mcq', topic: 'Thuyết Acid-Base', question: 'Theo thuyết Brønsted-Lowry, một base là một chất...', options: ['cho proton (H<sup>+</sup>).', 'nhận proton (H<sup>+</sup>).', 'cho electron.', 'nhận electron.'], answer: 'B', explanation: 'Theo định nghĩa của Brønsted-Lowry: Acid là chất cho proton (H<sup>+</sup>), Base là chất nhận proton (H<sup>+</sup>).' },
+                { type: 'mcq', topic: 'Thuyết Acid-Base', question: 'Cho phản ứng: NH<sub>3</sub> + H<sub>2</sub>O ⇌ NH<sub>4</sub><sup>+</sup> + OH<sup>-</sup>. Trong phản ứng này, H<sub>2</sub>O đóng vai trò là...', options: ['một acid.', 'một base.', 'chất khử.', 'chất oxi hóa.'], answer: 'A', explanation: 'Trong phản ứng thuận, phân tử H<sub>2</sub>O đã nhường một proton (H<sup>+</sup>) cho NH<sub>3</sub> để tạo thành ion OH<sup>-</sup>. Chất cho proton là acid theo thuyết Brønsted-Lowry.' },
+                { type: 'mcq', topic: 'pH', question: 'Dung dịch có pH = 7 là môi trường...', options: ['acid.', 'base.', 'trung tính.', 'lưỡng tính.'], answer: 'C', explanation: 'Theo quy ước, môi trường trung tính có [H<sup>+</sup>] = [OH<sup>-</sup>] = 10<sup>-7</sup> M, tương ứng với pH = 7 (ở 25°C).' },
+                { type: 'mcq', topic: 'pH', question: 'Dung dịch nào sau đây có pH > 7?', options: ['NaCl', 'HCl', 'Na<sub>2</sub>CO<sub>3</sub>', 'AlCl<sub>3</sub>'], answer: 'C', explanation: 'Na<sub>2</sub>CO<sub>3</sub> là muối tạo bởi base mạnh (NaOH) và acid yếu (H<sub>2</sub>CO<sub>3</sub>). Ion CO<sub>3</sub><sup>2-</sup> bị thủy phân trong nước tạo ra môi trường base (CO<sub>3</sub><sup>2-</sup> + H<sub>2</sub>O ⇌ HCO<sub>3</sub><sup>-</sup> + OH<sup>-</sup>), do đó pH > 7.' },
+                { type: 'mcq', topic: 'Cân bằng ion', question: 'Khi nhỏ vài giọt quỳ tím vào dung dịch AlCl<sub>3</sub>, dung dịch chuyển sang màu...', options: ['xanh.', 'đỏ.', 'tím.', 'không màu.'], answer: 'B', explanation: 'AlCl<sub>3</sub> là muối tạo bởi base yếu (Al(OH)<sub>3</sub>) và acid mạnh (HCl). Ion Al<sup>3+</sup> bị thủy phân trong nước tạo ra môi trường acid (Al<sup>3+</sup> + 2H<sub>2</sub>O ⇌ Al(OH)<sup>2+</sup> + H<sub>3</sub>O<sup>+</sup>), làm quỳ tím hóa đỏ.' },
+                { type: 'mcq', topic: 'pH', question: 'Tích số ion của nước (K<sub>w</sub>) ở 25°C có giá trị là...', options: ['1,0.10<sup>-7</sup>', '1,0.10<sup>-14</sup>', '1,0', '7,0'], answer: 'B', explanation: 'Tích số ion của nước, K<sub>w</sub> = [H<sup>+</sup>][OH<sup>-</sup>], là một hằng số ở nhiệt độ xác định. Ở 25°C, K<sub>w</sub> = 1,0.10<sup>-14</sup>.' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Phương trình điện li nào sau đây được viết đúng?', options: ['H<sub>2</sub>S → 2H<sup>+</sup> + S<sup>2-</sup>', 'Ba(OH)<sub>2</sub> → Ba<sup>2+</sup> + 2OH<sup>-</sup>', 'CH<sub>3</sub>COOH → CH<sub>3</sub>COO<sup>-</sup> + H<sup>+</sup>', 'Na<sub>2</sub>CO<sub>3</sub> ⇌ 2Na<sup>+</sup> + CO<sub>3</sub><sup>2-</sup>'], answer: 'B', explanation: 'Ba(OH)<sub>2</sub> là một base mạnh, phân li hoàn toàn trong nước, do đó dùng mũi tên một chiều (→). Các chất điện li yếu như H<sub>2</sub>S, CH<sub>3</sub>COOH phải dùng mũi tên hai chiều (⇌). Muối Na<sub>2</sub>CO<sub>3</sub> là chất điện li mạnh, phải dùng mũi tên một chiều.' },
+                { type: 'tf', topic: 'Nguyên lí Le Chatelier', question: 'Cho cân bằng hóa học: N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g); ΔH < 0. Xét các phát biểu sau:', statements: [ { text: 'Khi tăng nhiệt độ, cân bằng chuyển dịch theo chiều nghịch.', answer: true}, { text: 'Khi giảm áp suất, cân bằng chuyển dịch theo chiều thuận.', answer: false}, { text: 'Khi thêm N<sub>2</sub>, hiệu suất tổng hợp NH<sub>3</sub> tăng.', answer: true}, { text: 'Chất xúc tác làm tăng hằng số cân bằng K<sub>C</sub> của phản ứng.', answer: false} ], explanation: 'Phản ứng thuận tỏa nhiệt (ΔH < 0) và làm giảm số mol khí (4 mol → 2 mol).<br>1. Tăng nhiệt độ → CB chuyển dịch theo chiều thu nhiệt (chiều nghịch) → Đúng.<br>2. Giảm áp suất → CB chuyển dịch theo chiều làm tăng số mol khí (chiều nghịch) → Sai.<br>3. Thêm N<sub>2</sub> (chất tham gia) → CB chuyển dịch theo chiều thuận để giảm nồng độ N<sub>2</sub> → Đúng.<br>4. Chất xúc tác không làm thay đổi K<sub>C</sub> → Sai.'},
+                { type: 'tf', topic: 'Chuyển dịch cân bằng', question: 'Cho cân bằng: PCl<sub>5</sub>(g) ⇌ PCl<sub>3</sub>(g) + Cl<sub>2</sub>(g); ΔH > 0. Xét các tác động sau:', statements: [ { text: 'Tăng nhiệt độ làm cân bằng chuyển dịch theo chiều thuận.', answer: true}, { text: 'Thêm khí trơ (Ar) vào hệ ở thể tích không đổi không làm chuyển dịch cân bằng.', answer: true}, { text: 'Tăng áp suất bằng cách nén piston làm cân bằng chuyển dịch theo chiều nghịch.', answer: true}, { text: 'Lấy bớt Cl<sub>2</sub> ra khỏi hệ làm cân bằng chuyển dịch theo chiều nghịch.', answer: false} ], explanation: 'Phản ứng thuận thu nhiệt (ΔH > 0) và làm tăng số mol khí (1 mol → 2 mol).<br>1. Tăng nhiệt độ → CB chuyển dịch theo chiều thu nhiệt (chiều thuận) → Đúng.<br>2. Thêm khí trơ ở V không đổi không làm thay đổi nồng độ các chất → CB không chuyển dịch → Đúng.<br>3. Tăng áp suất → CB chuyển dịch theo chiều làm giảm số mol khí (chiều nghịch) → Đúng.<br>4. Lấy bớt Cl<sub>2</sub> (sản phẩm) → CB chuyển dịch theo chiều thuận để tạo thêm Cl<sub>2</sub> → Sai.'},
+                { type: 'tf', topic: 'Cân bằng ion', question: 'Xét cân bằng thủy phân của ion CH<sub>3</sub>COO<sup>-</sup>: CH<sub>3</sub>COO<sup>-</sup> + H<sub>2</sub>O ⇌ CH<sub>3</sub>COOH + OH<sup>-</sup>. Xét các phát biểu sau:', statements: [ { text: 'Dung dịch CH<sub>3</sub>COONa có môi trường base (pH > 7).', answer: true}, { text: 'Khi thêm vài giọt HCl, màu của phenolphthalein (nếu có) sẽ nhạt đi.', answer: true}, { text: 'Khi đun nóng dung dịch, cân bằng chuyển dịch theo chiều thuận.', answer: true}, { text: 'CH<sub>3</sub>COO<sup>-</sup> là một acid theo thuyết Brønsted-Lowry.', answer: false} ], explanation: '1. Phản ứng thủy phân tạo ra OH<sup>-</sup>, làm cho dung dịch có môi trường base → Đúng.<br>2. Thêm HCl (H<sup>+</sup>) sẽ trung hòa OH<sup>-</sup>, làm cân bằng dịch chuyển sang phải, nhưng lượng OH<sup>-</sup> tổng thể giảm mạnh, pH giảm, màu hồng của phenolphtalein nhạt đi → Đúng.<br>3. Quá trình thủy phân thường là thu nhiệt, nên khi đun nóng, cân bằng chuyển dịch theo chiều thuận → Đúng.<br>4. Trong phản ứng, CH<sub>3</sub>COO<sup>-</sup> nhận H<sup>+</sup> từ nước nên nó là một base → Sai.'},
+                { type: 'tf', topic: 'Sự điện li', question: 'Xét các phát biểu về sự điện li:', statements: [ { text: 'HCl là chất điện li mạnh.', answer: true}, { text: 'Nước cất tinh khiết dẫn điện tốt.', answer: false}, { text: 'Hầu hết các muối đều là chất điện li mạnh.', answer: true}, { text: 'Dung dịch acetic acid (CH<sub>3</sub>COOH) chỉ chứa ion, không chứa phân tử.', answer: false} ], explanation: '1. HCl là acid mạnh nên điện li hoàn toàn → Đúng.<br>2. Nước cất là chất điện li rất yếu, hầu như không dẫn điện → Sai.<br>3. Đúng theo lý thuyết, hầu hết các muối tan đều điện li hoàn toàn → Đúng.<br>4. CH<sub>3</sub>COOH là acid yếu, điện li không hoàn toàn, trong dung dịch tồn tại cả phân tử CH<sub>3</sub>COOH và các ion → Sai.'},
+                { type: 'short', topic: 'Tính toán CBHH', question: 'Cho phản ứng: H<sub>2</sub>(g) + I<sub>2</sub>(g) ⇌ 2HI(g). Nồng độ ban đầu của H<sub>2</sub> và I<sub>2</sub> lần lượt là 0.04M. Khi cân bằng, nồng độ HI là 0.06M. Hằng số cân bằng K<sub>C</sub> của phản ứng là bao nhiêu?', answer: '36', explanation: 'Theo phương trình, [H<sub>2</sub>] pư = [I<sub>2</sub>] pư = [HI]/2 = 0.03M. <br>Tại CB: [H<sub>2</sub>] = [I<sub>2</sub>] = 0.04 - 0.03 = 0.01M. <br>K<sub>C</sub> = [HI]<sup>2</sup> / ([H<sub>2</sub>][I<sub>2</sub>]) = (0.06)<sup>2</sup> / (0.01 * 0.01) = 36.' },
+                { type: 'short', topic: 'Lý thuyết đếm', question: 'Cho các yếu tố: (1) nhiệt độ, (2) áp suất, (3) nồng độ H<sub>2</sub>, (4) chất xúc tác. Có bao nhiêu yếu tố ảnh hưởng đến sự CHUYỂN DỊCH cân bằng của phản ứng N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g)?', answer: '3', explanation: 'Các yếu tố ảnh hưởng đến sự chuyển dịch cân bằng là nồng độ, nhiệt độ và áp suất (khi có sự thay đổi số mol khí). Chất xúc tác chỉ làm tăng tốc độ phản ứng, không làm chuyển dịch cân bằng. Vậy có 3 yếu tố là (1), (2), (3).' },
+                { type: 'short', topic: 'Tính toán CBHH', question: 'Một phản ứng A ⇌ 2B. Ban đầu có 1 mol A trong bình 1 lít. Tại cân bằng, 60% A đã phản ứng. Hằng số cân bằng K<sub>C</sub> là bao nhiêu?', answer: '3,6', explanation: 'Nồng độ ban đầu [A] = 1M. <br>[A] pư = 1 * 60% = 0.6M. <br>Tại CB: [A] = 1 - 0.6 = 0.4M. [B] = 2 * 0.6 = 1.2M. <br>K<sub>C</sub> = [B]<sup>2</sup> / [A] = (1.2)<sup>2</sup> / 0.4 = 3,6.' },
+                { type: 'short', topic: 'Tính toán pH', question: 'Tính pH của dung dịch HCl nồng độ 0,01 M (coi HCl điện li hoàn toàn).', answer: '2', explanation: 'HCl → H<sup>+</sup> + Cl<sup>-</sup>. Do HCl điện li hoàn toàn, [H<sup>+</sup>] = [HCl] = 0,01 M = 10<sup>-2</sup> M. <br>pH = -log[H<sup>+</sup>] = -log(10<sup>-2</sup>) = 2.' },
+                { type: 'short', topic: 'Lý thuyết đếm', question: 'Cho các chất sau: C<sub>2</sub>H<sub>5</sub>OH, HCOOH, NaCl, Ca(OH)<sub>2</sub>, Fe(OH)<sub>3</sub>, C<sub>6</sub>H<sub>6</sub>. Có bao nhiêu chất là chất điện li?', answer: '4', explanation: 'Các chất điện li là acid, base, muối. Bao gồm: HCOOH (acid yếu), NaCl (muối), Ca(OH)<sub>2</sub> (base mạnh), Fe(OH)<sub>3</sub> (base yếu). C<sub>2</sub>H<sub>5</sub>OH (ancohol) và C<sub>6</sub>H<sub>6</sub> (hydrocarbon) là các chất không điện li. Vậy có 4 chất.' },
+                { type: 'short', topic: 'Tính toán pH', question: 'Tính pOH của dung dịch NaOH 0,001M (coi NaOH điện li hoàn toàn).', answer: '3', explanation: 'NaOH → Na<sup>+</sup> + OH<sup>-</sup>. Do NaOH điện li hoàn toàn, [OH<sup>-</sup>] = [NaOH] = 0,001 M = 10<sup>-3</sup> M. <br>pOH = -log[OH<sup>-</sup>] = -log(10<sup>-3</sup>) = 3.' }
+            ],
+            de2: [
+                { type: 'mcq', topic: 'Khái niệm CBHH', question: 'Đặc điểm nào sau đây không phải của trạng thái cân bằng hóa học?', options: ['Tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch.', 'Nồng độ các chất không đổi.', 'Các tính chất vĩ mô của hệ không đổi.', 'Phản ứng dừng lại hoàn toàn.'], answer: 'D', explanation: 'Cân bằng hóa học là một cân bằng động, nghĩa là các phản ứng thuận và nghịch vẫn diễn ra, không hề dừng lại, chỉ là tốc độ của chúng bằng nhau.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Trong công nghiệp, ammonia được tổng hợp theo phản ứng: N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g), ΔH < 0. Để tăng hiệu suất, người ta dùng biện pháp nào?', options: ['Tăng nhiệt độ, giảm áp suất.', 'Giảm nhiệt độ, giảm áp suất.', 'Tăng nhiệt độ, tăng áp suất.', 'Giảm nhiệt độ, tăng áp suất.'], answer: 'D', explanation: 'Phản ứng thuận tỏa nhiệt (cần giảm nhiệt độ) và làm giảm số mol khí (cần tăng áp suất). Tuy nhiên, thực tế người ta thực hiện ở nhiệt độ khoảng 400-450°C để tăng tốc độ phản ứng.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Giá trị K<sub>C</sub> rất nhỏ cho biết điều gì?', options: ['Phản ứng diễn ra gần như hoàn toàn.', 'Hiệu suất phản ứng rất cao.', 'Tại trạng thái cân bằng, lượng chất tham gia còn lại rất nhiều.', 'Phản ứng xảy ra rất nhanh.'], answer: 'C', explanation: 'K<sub>C</sub> = [Sản phẩm]/[Chất tham gia]. Nếu K<sub>C</sub> rất nhỏ, chứng tỏ nồng độ sản phẩm rất nhỏ so với nồng độ chất tham gia ở trạng thái cân bằng, tức là phản ứng xảy ra với hiệu suất thấp.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Cho cân bằng: 2NO<sub>2</sub>(g) (nâu đỏ) ⇌ N<sub>2</sub>O<sub>4</sub>(g) (không màu), ΔH < 0. Nếu làm lạnh bình phản ứng, màu của hỗn hợp sẽ', options: ['đậm lên.', 'nhạt đi.', 'không thay đổi.', 'chuyển sang màu xanh.'], answer: 'B', explanation: 'Phản ứng thuận tỏa nhiệt. Khi làm lạnh (giảm nhiệt độ), cân bằng sẽ chuyển dịch theo chiều tỏa nhiệt, tức chiều thuận, tạo ra nhiều N<sub>2</sub>O<sub>4</sub> không màu, làm màu nâu đỏ của hỗn hợp nhạt đi.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Biểu thức K<sub>C</sub> cho phản ứng: Fe<sub>2</sub>O<sub>3</sub>(s) + 3CO(g) ⇌ 2Fe(s) + 3CO<sub>2</sub>(g) là', options: ['K<sub>C</sub> = [CO<sub>2</sub>]<sup>3</sup> / [CO]<sup>3</sup>', 'K<sub>C</sub> = ([Fe]<sup>2</sup>[CO<sub>2</sub>]<sup>3</sup>) / ([Fe<sub>2</sub>O<sub>3</sub>][CO]<sup>3</sup>)', 'K<sub>C</sub> = [Fe]<sup>2</sup> / [Fe<sub>2</sub>O<sub>3</sub>]', 'K<sub>C</sub> = [CO]<sup>3</sup> / [CO<sub>2</sub>]<sup>3</sup>'], answer: 'A', explanation: 'Trong biểu thức hằng số cân bằng K<sub>C</sub>, ta không biểu diễn nồng độ của các chất rắn. Do đó, K<sub>C</sub> = [CO<sub>2</sub>]<sup>3</sup> / [CO]<sup>3</sup>.' },
+                { type: 'mcq', topic: 'Khái niệm CBHH', question: 'Phát biểu nào sau đây là đúng về cân bằng động?', options: ['Nồng độ các chất luôn thay đổi.', 'Các phản ứng hóa học đã kết thúc.', 'Tốc độ phản ứng thuận luôn lớn hơn tốc độ phản ứng nghịch.', 'Các quá trình diễn ra ở cấp độ vi mô vẫn tiếp diễn.'], answer: 'D', explanation: 'Cân bằng động có nghĩa là ở cấp độ phân tử (vi mô), các phản ứng vẫn diễn ra, nhưng ở cấp độ có thể quan sát (vĩ mô), các tính chất như nồng độ, màu sắc, áp suất không thay đổi.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Việc thêm khí trơ He vào hệ cân bằng N<sub>2</sub>O<sub>4</sub>(g) ⇌ 2NO<sub>2</sub>(g) ở áp suất không đổi sẽ làm', options: ['cân bằng chuyển dịch sang trái.', 'cân bằng chuyển dịch sang phải.', 'cân bằng không bị chuyển dịch.', 'tăng giá trị K<sub>C</sub>.'], answer: 'B', explanation: 'Khi thêm khí trơ ở áp suất không đổi, thể tích của hệ sẽ tăng lên, làm giảm nồng độ (áp suất riêng phần) của các chất. Cân bằng sẽ dịch chuyển theo chiều làm tăng số mol khí, tức là chiều phải (1 mol → 2 mol).' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Cho phản ứng A ⇌ B có K<sub>C</sub> = 25. Phản ứng 2B ⇌ 2A sẽ có hằng số cân bằng là bao nhiêu?', options: ['50', '0.04', '0.0016', '625'], answer: 'C', explanation: 'Phản ứng B ⇌ A có K\'<sub>C</sub> = 1/K<sub>C</sub> = 1/25. Phản ứng 2B ⇌ 2A có K\'\'<sub>C</sub> = (K\'<sub>C</sub>)<sup>2</sup> = (1/25)<sup>2</sup> = 1/625 = 0.0016.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Trong phản ứng este hóa giữa C<sub>2</sub>H<sub>5</sub>OH và CH<sub>3</sub>COOH, để tăng hiệu suất tạo este, người ta có thể', options: ['thêm nước vào hệ.', 'dùng H<sub>2</sub>SO<sub>4</sub> đặc làm xúc tác và hút nước.', 'giảm nồng độ acid hoặc alcohol.', 'thực hiện ở áp suất cao.'], answer: 'B', explanation: 'Phản ứng este hóa là thuận nghịch. Dùng H<sub>2</sub>SO<sub>4</sub> đặc vừa làm xúc tác, vừa hút nước (sản phẩm), làm cân bằng chuyển dịch theo chiều thuận, tăng hiệu suất.' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Chất nào sau đây là chất điện li mạnh?', options: ['H<sub>2</sub>S', 'Cu(OH)<sub>2</sub>', 'HF', 'KNO<sub>3</sub>'], answer: 'D', explanation: 'KNO<sub>3</sub> là một muối tan, là chất điện li mạnh. H<sub>2</sub>S, HF là các acid yếu, Cu(OH)<sub>2</sub> là base không tan (cũng là chất điện li yếu).' },
+                { type: 'mcq', topic: 'Thuyết Acid-Base', question: 'Theo Brønsted-Lowry, ion nào sau đây là lưỡng tính?', options: ['CO<sub>3</sub><sup>2-</sup>', 'NH<sub>4</sub><sup>+</sup>', 'HCO<sub>3</sub><sup>-</sup>', 'H<sub>3</sub>O<sup>+</sup>'], answer: 'C', explanation: 'Ion HCO<sub>3</sub><sup>-</sup> có thể cho proton (tạo CO<sub>3</sub><sup>2-</sup>, thể hiện tính acid) và có thể nhận proton (tạo H<sub>2</sub>CO<sub>3</sub>, thể hiện tính base), do đó là chất lưỡng tính.' },
+                { type: 'mcq', topic: 'pH', question: 'Dung dịch có pOH = 11 thì có môi trường gì (ở 25°C)?', options: ['Acid', 'Base', 'Trung tính', 'Không xác định được'], answer: 'A', explanation: 'Ở 25°C, pH + pOH = 14. Nếu pOH = 11 thì pH = 14 - 11 = 3. Dung dịch có pH < 7 là môi trường acid.' },
+                { type: 'mcq', topic: 'Cân bằng ion', question: 'Dung dịch muối nào sau đây làm quỳ tím hóa xanh?', options: ['NH<sub>4</sub>Cl', 'Fe(NO<sub>3</sub>)<sub>3</sub>', 'CH<sub>3</sub>COONa', 'Na<sub>2</sub>SO<sub>4</sub>'], answer: 'C', explanation: 'CH<sub>3</sub>COONa là muối của acid yếu và base mạnh. Ion CH<sub>3</sub>COO<sup>-</sup> bị thủy phân tạo môi trường base (CH<sub>3</sub>COO<sup>-</sup> + H<sub>2</sub>O ⇌ CH<sub>3</sub>COOH + OH<sup>-</sup>), làm quỳ tím hóa xanh.' },
+                { type: 'mcq', topic: 'Thuyết Acid-Base', question: 'Trong phản ứng: S<sup>2-</sup> + H<sub>2</sub>O ⇌ HS<sup>-</sup> + OH<sup>-</sup>, S<sup>2-</sup> đóng vai trò là', options: ['acid', 'base', 'chất oxi hóa', 'chất lưỡng tính'], answer: 'B', explanation: 'Ion S<sup>2-</sup> đã nhận một proton (H<sup>+</sup>) từ H<sub>2</sub>O để tạo thành HS<sup>-</sup>. Theo thuyết Brønsted-Lowry, chất nhận proton là base.' },
+                { type: 'mcq', topic: 'pH', question: 'Khi pha loãng một dung dịch acid, giá trị pH của nó sẽ', options: ['tăng lên.', 'giảm đi.', 'không đổi.', 'có thể tăng hoặc giảm.'], answer: 'A', explanation: 'Pha loãng dung dịch acid làm giảm nồng độ H<sup>+</sup>. Vì pH = -log[H<sup>+</sup>], nên khi [H<sup>+</sup>] giảm, pH sẽ tăng lên (tiến dần về 7).' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'So sánh khả năng dẫn điện của dung dịch HCl 0,1M (1) và CH<sub>3</sub>COOH 0,1M (2), ta có:', options: ['(1) > (2)', '(1) < (2)', '(1) = (2)', 'không so sánh được'], answer: 'A', explanation: 'HCl là chất điện li mạnh, phân li hoàn toàn ra ion. CH<sub>3</sub>COOH là chất điện li yếu, phân li một phần. Do đó, ở cùng nồng độ, dung dịch HCl có nồng độ ion lớn hơn và dẫn điện tốt hơn.' },
+                { type: 'mcq', topic: 'pH', question: 'Một dung dịch có nồng độ [H<sup>+</sup>] = 2.10<sup>-4</sup> M. Giá trị pH của dung dịch là:', options: ['4', '3,7', '4,3', '10,3'], answer: 'B', explanation: 'pH = -log[H<sup>+</sup>] = -log(2.10<sup>-4</sup>) = -(log2 + log10<sup>-4</sup>) = - (0,3 - 4) = 3,7.' },
+                { type: 'mcq', topic: 'Cân bằng ion', question: 'Hiện tượng "ảnh hưởng của ion chung" (common ion effect) làm cho', options: ['độ điện li của chất điện li yếu tăng lên.', 'độ điện li của chất điện li yếu giảm đi.', 'độ điện li của chất điện li mạnh tăng lên.', 'độ tan của chất ít tan tăng lên.'], answer: 'B', explanation: 'Khi thêm một ion chung vào dung dịch chất điện li yếu, cân bằng điện li sẽ chuyển dịch theo chiều nghịch, làm giảm độ điện li của chất đó. Ví dụ: thêm CH<sub>3</sub>COONa vào dung dịch CH<sub>3</sub>COOH.' },
+                { type: 'tf', topic: 'Hằng số cân bằng', question: 'Xét các phát biểu về hằng số cân bằng K<sub>C</sub>:', statements: [ { text: 'K<sub>C</sub> của phản ứng thuận bằng K<sub>C</sub> của phản ứng nghịch.', answer: false}, { text: 'Nếu một phản ứng có K<sub>C</sub> = 100, thì phản ứng nghịch có K<sub>C</sub> = 0,01.', answer: true}, { text: 'K<sub>C</sub> luôn không có đơn vị.', answer: false}, { text: 'Giá trị K<sub>C</sub> cho biết tốc độ phản ứng nhanh hay chậm.', answer: false} ], explanation: '1. K<sub>C(nghịch)</sub> = 1/K<sub>C(thuận)</sub> → Sai.<br>2. K<sub>C(nghịch)</sub> = 1/100 = 0,01 → Đúng.<br>3. Đơn vị của K<sub>C</sub> phụ thuộc vào biểu thức, có thể có hoặc không có đơn vị → Sai.<br>4. K<sub>C</sub> cho biết mức độ của phản ứng (hiệu suất), không liên quan đến tốc độ → Sai.' },
+                { type: 'tf', topic: 'Chuyển dịch cân bằng', question: 'Trong quá trình sản xuất vôi: CaCO<sub>3</sub>(s) ⇌ CaO(s) + CO<sub>2</sub>(g), ΔH > 0. Xét các phát biểu:', statements: [ { text: 'Đây là phản ứng tỏa nhiệt.', answer: false}, { text: 'Để tăng hiệu suất, cần thực hiện ở nhiệt độ cao và hút khí CO<sub>2</sub> ra liên tục.', answer: true}, { text: 'Giảm thể tích bình phản ứng sẽ làm cân bằng chuyển dịch sang phải.', answer: false}, { text: 'Thêm CaCO<sub>3</sub> vào sẽ làm cân bằng chuyển dịch sang phải.', answer: false} ], explanation: '1. ΔH > 0 là phản ứng thu nhiệt → Sai.<br>2. Tăng nhiệt độ và giảm nồng độ sản phẩm (CO<sub>2</sub>) sẽ làm CB dịch chuyển sang phải → Đúng.<br>3. Giảm thể tích (tăng áp suất) sẽ làm CB dịch chuyển sang trái (chiều giảm số mol khí) → Sai.<br>4. CaCO<sub>3</sub> là chất rắn, việc thêm vào không làm thay đổi nồng độ nên không làm dịch chuyển cân bằng → Sai.' },
+                { type: 'tf', topic: 'Thuyết Acid-Base', question: 'Xét các phát biểu theo thuyết Brønsted-Lowry:', statements: [ { text: 'Một chất là acid thì không thể là base.', answer: false}, { text: 'Acid mạnh có base liên hợp yếu.', answer: true}, { text: 'H<sub>2</sub>O là một chất lưỡng tính.', answer: true}, { text: 'Ion NH<sub>4</sub><sup>+</sup> là một base.', answer: false} ], explanation: '1. Các chất lưỡng tính (như H<sub>2</sub>O, HCO<sub>3</sub><sup>-</sup>) vừa có thể là acid, vừa có thể là base → Sai.<br>2. Đây là một quy luật quan trọng, ví dụ HCl (acid rất mạnh) có base liên hợp là Cl<sup>-</sup> (rất yếu) → Đúng.<br>3. H<sub>2</sub>O có thể cho H<sup>+</sup> (thành OH<sup>-</sup>) và nhận H<sup>+</sup> (thành H<sub>3</sub>O<sup>+</sup>) → Đúng.<br>4. Ion NH<sub>4</sub><sup>+</sup> có khả năng cho H<sup>+</sup> (tạo NH<sub>3</sub>) nên nó là một acid → Sai.' },
+                { type: 'tf', topic: 'pH', question: 'Xét các dung dịch có cùng nồng độ 0.1M:', statements: [ { text: 'pH của dung dịch HCl nhỏ hơn pH của dung dịch CH<sub>3</sub>COOH.', answer: true}, { text: 'pH của dung dịch NaOH bằng pH của dung dịch Ba(OH)<sub>2</sub>.', answer: false}, { text: 'Dung dịch CH<sub>3</sub>COONa có pH > 7.', answer: true}, { text: 'Dung dịch KCl có pH = 7.', answer: true} ], explanation: '1. HCl là acid mạnh, điện li hoàn toàn, [H<sup>+</sup>] cao hơn CH<sub>3</sub>COOH (acid yếu) → pH thấp hơn → Đúng.<br>2. [OH<sup>-</sup>] của Ba(OH)<sub>2</sub> 0.1M là 0.2M, cao hơn của NaOH (0.1M) → pH của Ba(OH)<sub>2</sub> cao hơn → Sai.<br>3. Muối của acid yếu và base mạnh, bị thủy phân tạo môi trường base → Đúng.<br>4. Muối của acid mạnh và base mạnh, không bị thủy phân, môi trường trung tính → Đúng.' },
+                { type: 'short', topic: 'Tính toán CBHH', question: 'Ở nhiệt độ không đổi, xét cân bằng: 2SO₂(g) + O₂(g) ⇌ 2SO₃(g). Nồng độ ban đầu của SO₂ là 0.4M, O₂ là 0.2M. Tại cân bằng, có 80% SO₂ đã phản ứng. Tính K<sub>C</sub>.', answer: '400', explanation: 'SO₂ pư = 0.4 * 80% = 0.32M.<br>Tại CB: [SO₂] = 0.4 - 0.32 = 0.08M; [O₂] = 0.2 - 0.32/2 = 0.04M; [SO₃] = 0.32M.<br>K<sub>C</sub> = [SO₃]² / ([SO₂]²[O₂]) = (0.32)² / ((0.08)² * 0.04) = 400.' },
+                { type: 'short', topic: 'Lý thuyết đếm', question: 'Cho các cân bằng sau: (a) H₂(g) + I₂(g) ⇌ 2HI(g); (b) 2NO₂(g) ⇌ N₂O₄(g); (c) C(s) + CO₂(g) ⇌ 2CO(g). Có bao nhiêu cân bằng sẽ chuyển dịch theo chiều nghịch khi tăng áp suất?', answer: '1', explanation: 'Tăng áp suất làm cân bằng dịch chuyển theo chiều giảm số mol khí.<br>(a) Δn=0: không dịch chuyển.<br>(b) Δn=1-2=-1: dịch chuyển theo chiều thuận.<br>(c) Δn=2-1=1: dịch chuyển theo chiều nghịch.<br>Vậy có 1 cân bằng thỏa mãn.' },
+                { type: 'short', topic: 'Tính toán CBHH', question: 'Cho phản ứng nghịch: 2HI(g) ⇌ H₂(g) + I₂(g) có K<sub>C</sub> = 1/64 ở nhiệt độ T. Hằng số cân bằng của phản ứng thuận H₂(g) + I₂(g) ⇌ 2HI(g) ở cùng nhiệt độ T là bao nhiêu?', answer: '64', explanation: 'Hằng số cân bằng của phản ứng thuận bằng nghịch đảo hằng số cân bằng của phản ứng nghịch: K<sub>C(thuận)</sub> = 1 / K<sub>C(nghịch)</sub> = 1 / (1/64) = 64.' },
+                { type: 'short', topic: 'Tính toán pH', question: 'Dung dịch Ba(OH)₂ có nồng độ 0,005M. Tính pH của dung dịch này (coi Ba(OH)₂ điện li hoàn toàn).', answer: '12', explanation: 'Ba(OH)₂ → Ba²⁺ + 2OH⁻.<br>[OH⁻] = 2 * 0,005 = 0,01M = 10⁻² M.<br>pOH = -log(10⁻²) = 2.<br>pH = 14 - pOH = 14 - 2 = 12.' },
+                { type: 'short', topic: 'Lý thuyết đếm', question: 'Cho các ion sau: Na⁺, Cl⁻, HSO₄⁻, HCO₃⁻, Al³⁺(dd), S²⁻. Có bao nhiêu ion/chất đóng vai trò là acid theo thuyết Brønsted-Lowry?', answer: '3', explanation: 'Các ion có khả năng cho H⁺ là acid. Gồm có: HSO₄⁻ (cho H⁺), HCO₃⁻ (cho H⁺), Al³⁺ (thực chất là [Al(H₂O)₆]³⁺ cho H⁺). Na⁺, Cl⁻ trung tính. S²⁻ là base. Vậy có 3 ion là acid.' },
+                { type: 'short', topic: 'Tính toán pH', question: 'Một dung dịch có pH=4. Nồng độ ion H⁺ là 10<sup>-x</sup> M. Giá trị của x là?', answer: '4', explanation: 'Theo định nghĩa, pH = -log[H⁺]. Nếu pH = 4 thì [H⁺] = 10⁻⁴ M. Do đó, x = 4.' }
+            ],
+            de3: [
+                { type: 'mcq', topic: 'Khái niệm CBHH', question: 'Mũi tên hai chiều (⇌) trong phương trình hóa học biểu thị điều gì?', options: ['Phản ứng chỉ xảy ra theo chiều thuận.', 'Phản ứng tỏa nhiệt.', 'Phản ứng có chất xúc tác.', 'Phản ứng là thuận nghịch.'], answer: 'D', explanation: 'Kí hiệu ⇌ là dấu hiệu đặc trưng của một phản ứng thuận nghịch, cho biết phản ứng xảy ra theo cả hai chiều trong cùng một điều kiện.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Yếu tố nào sau đây luôn không làm dịch chuyển cân bằng của một hệ phản ứng?', options: ['Nhiệt độ', 'Áp suất', 'Nồng độ', 'Chất xúc tác'], answer: 'D', explanation: 'Chất xúc tác chỉ làm tăng tốc độ phản ứng thuận và nghịch lên một số lần như nhau, giúp hệ nhanh đạt cân bằng chứ không làm thay đổi vị trí cân bằng.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Phản ứng thuận nghịch đạt đến trạng thái cân bằng khi nào?', options: ['Nồng độ các chất sản phẩm bằng nồng độ các chất phản ứng.', 'Phản ứng thuận đã kết thúc.', 'Tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch.', 'Phản ứng nghịch chưa bắt đầu.'], answer: 'C', explanation: 'Định nghĩa của trạng thái cân bằng hóa học là trạng thái mà tại đó, tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch (v<sub>thuận</sub> = v<sub>nghịch</sub>).' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Cho phản ứng sau ở trạng thái cân bằng: H₂(g) + Cl₂(g) ⇌ 2HCl(g), ΔH < 0. Cân bằng sẽ chuyển dịch theo chiều nào nếu tăng nhiệt độ?', options: ['Chiều thuận.', 'Chiều nghịch.', 'Không thay đổi.', 'Dừng lại.'], answer: 'B', explanation: 'Phản ứng thuận là tỏa nhiệt (ΔH < 0). Theo nguyên lí Le Chatelier, khi tăng nhiệt độ, cân bằng sẽ chuyển dịch theo chiều thu nhiệt, tức là chiều nghịch.' },
+                { type: 'mcq', topic: 'Khái niệm CBHH', question: 'Hiệu suất của một phản ứng thuận nghịch thể hiện điều gì?', options: ['Tốc độ của phản ứng.', 'Lượng sản phẩm thực tế thu được so với lượng sản phẩm lí thuyết.', 'Lượng nhiệt tỏa ra hay thu vào.', 'Khả năng phản ứng tự xảy ra.'], answer: 'B', explanation: 'Hiệu suất phản ứng cho biết mức độ chuyển hóa của chất tham gia thành sản phẩm, được tính bằng tỉ lệ giữa lượng sản phẩm thực tế và lượng sản phẩm lí thuyết nếu phản ứng xảy ra hoàn toàn.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Cho cân bằng C(s) + H₂O(g) ⇌ CO(g) + H₂(g). Biểu thức hằng số cân bằng K<sub>C</sub> là:', options: ['K<sub>C</sub> = ([CO][H₂]) / [H₂O]', 'K<sub>C</sub> = ([CO][H₂]) / ([C][H₂O])', 'K<sub>C</sub> = [H₂O] / ([CO][H₂])', 'K<sub>C</sub> = [C] / [CO]'], answer: 'A', explanation: 'Chất rắn (C) không được đưa vào biểu thức hằng số cân bằng. Do đó, K<sub>C</sub> = ([CO][H₂]) / [H₂O].' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Xét cân bằng: SO₂(g) + NO₂(g) ⇌ SO₃(g) + NO(g). Khi tăng nồng độ của NO₂, cân bằng sẽ', options: ['chuyển dịch theo chiều thuận.', 'chuyển dịch theo chiều nghịch.', 'không bị ảnh hưởng.', 'dừng lại.'], answer: 'A', explanation: 'Khi tăng nồng độ của một chất tham gia (NO₂), theo nguyên lí Le Chatelier, cân bằng sẽ chuyển dịch theo chiều làm giảm nồng độ chất đó, tức là chiều thuận.' },
+                { type: 'mcq', topic: 'Hằng số cân bằng', question: 'Phản ứng giữa H₂ và O₂ tạo ra nước là phản ứng một chiều vì', options: ['phản ứng tỏa nhiệt rất mạnh.', 'sản phẩm tạo thành (H₂O) rất bền.', 'H₂ và O₂ là những chất khí.', 'điều kiện để H₂O phân hủy ngược lại rất khác so với điều kiện tổng hợp.'], answer: 'D', explanation: 'Phản ứng tổng hợp nước xảy ra khi đốt cháy, còn phản ứng điện phân nước để tạo lại H₂ và O₂ cần điều kiện hoàn toàn khác. Do đó, trong một điều kiện xác định, nó được coi là phản ứng một chiều.' },
+                { type: 'mcq', topic: 'Chuyển dịch cân bằng', question: 'Sự hình thành thạch nhũ trong hang động liên quan đến cân bằng: Ca(HCO₃)₂(aq) ⇌ CaCO₃(s) + H₂O(l) + CO₂(g). Yếu tố nào làm cân bằng chuyển dịch theo chiều thuận?', options: ['Nhiệt độ tăng và CO₂ thoát ra.', 'Nhiệt độ giảm và CO₂ thoát ra.', 'Nhiệt độ tăng và áp suất CO₂ tăng.', 'Nhiệt độ giảm và áp suất CO₂ tăng.'], answer: 'A', explanation: 'Phản ứng thuận là thu nhiệt (cần nhiệt độ tăng) và giải phóng khí CO₂. Khi nước nhỏ giọt và CO₂ thoát ra (giảm nồng độ), cân bằng sẽ chuyển dịch theo chiều thuận để tạo thêm CaCO₃ (thạch nhũ).' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Chất nào sau đây không phải là chất điện li?', options: ['HClO', 'MgCl₂', 'C₂H₅OH (ethanol)', 'H₃PO₄'], answer: 'C', explanation: 'Ethanol là một hợp chất hữu cơ (ancohol), khi tan trong nước tồn tại ở dạng phân tử và không phân li ra ion, do đó là chất không điện li.' },
+                { type: 'mcq', topic: 'pH', question: 'Dung dịch nào sau đây có pH < 7?', options: ['K₂CO₃', 'Ba(OH)₂', 'NH₄Cl', 'NaNO₃'], answer: 'C', explanation: 'NH₄Cl là muối tạo bởi base yếu (NH₃) và acid mạnh (HCl). Ion NH₄⁺ bị thủy phân trong nước tạo môi trường acid (NH₄⁺ + H₂O ⇌ NH₃ + H₃O⁺), do đó pH < 7.' },
+                { type: 'mcq', topic: 'Thuyết Acid-Base', question: 'Theo thuyết Brønsted-Lowry, acid là', options: ['chất có khả năng cho cặp electron.', 'chất có khả năng nhận proton (H⁺).', 'chất có khả năng cho proton (H⁺).', 'chất có khả năng nhận cặp electron.'], answer: 'C', explanation: 'Định nghĩa của Brønsted-Lowry: Acid là chất cho proton (H⁺), base là chất nhận proton (H⁺).' },
+                { type: 'mcq', topic: 'Cân bằng ion', question: 'Phương trình ion rút gọn H⁺ + OH⁻ → H₂O biểu diễn bản chất của phản ứng nào?', options: ['HCl + NaOH → NaCl + H₂O', 'H₂SO₄ + Ba(OH)₂ → BaSO₄ + 2H₂O', 'CH₃COOH + NaOH → CH₃COONa + H₂O', 'Tất cả các phản ứng trên.'], answer: 'A', explanation: 'Đây là phản ứng giữa acid mạnh và base mạnh, cả hai đều điện li hoàn toàn ra H⁺ và OH⁻. Các phản ứng khác có chất kết tủa (BaSO₄) hoặc chất điện li yếu (CH₃COOH) nên có phương trình ion rút gọn khác.' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Trong dung dịch acetic acid (CH₃COOH) có chứa những phần tử nào?', options: ['Chỉ có H⁺ và CH₃COO⁻.', 'Chỉ có phân tử CH₃COOH.', 'Phân tử CH₃COOH, H⁺, CH₃COO⁻ và H₂O.', 'Chỉ có phân tử CH₃COOH và H₂O.'], answer: 'C', explanation: 'Acetic acid là chất điện li yếu, nên trong dung dịch tồn tại cân bằng giữa các phân tử CH₃COOH chưa phân li và các ion H⁺, CH₃COO⁻ đã phân li. Dung môi là H₂O.' },
+                { type: 'mcq', topic: 'pH', question: 'Nếu [OH⁻] = 1,0.10⁻⁵ M thì dung dịch có', options: ['pH = 5.', 'pH = 9.', 'pH = 7.', 'pH = 1.'], answer: 'B', explanation: 'pOH = -log[OH⁻] = -log(1,0.10⁻⁵) = 5. Ở 25°C, pH = 14 - pOH = 14 - 5 = 9.' },
+                { type: 'mcq', topic: 'Thuyết Acid-Base', question: 'Chất nào sau đây là base liên hợp của HSO₄⁻?', options: ['H₂SO₄', 'SO₄²⁻', 'H₃O⁺', 'SO₃'], answer: 'B', explanation: 'Base liên hợp được tạo thành khi một acid cho đi một proton (H⁺). Khi HSO₄⁻ cho đi H⁺, nó trở thành SO₄²⁻.' },
+                { type: 'mcq', topic: 'Sự điện li', question: 'Độ điện li α của chất điện li yếu sẽ thay đổi như thế nào khi pha loãng dung dịch?', options: ['Tăng', 'Giảm', 'Không đổi', 'Có thể tăng hoặc giảm'], answer: 'A', explanation: 'Theo định luật pha loãng Ostwald, khi pha loãng dung dịch (giảm nồng độ), độ điện li α của chất điện li yếu tăng lên.' },
+                { type: 'mcq', topic: 'pH', question: 'Chất chỉ thị vạn năng chuyển sang màu gì trong dung dịch có pH = 10?', options: ['Đỏ', 'Vàng', 'Xanh lá', 'Xanh lam/Tím'], answer: 'D', explanation: 'pH = 10 là môi trường base mạnh. Trong môi trường base, chất chỉ thị vạn năng thường có màu xanh lam hoặc tím.' },
+                { type: 'tf', topic: 'Nguyên lí Le Chatelier', question: 'Xét cân bằng: CO(g) + H₂O(g) ⇌ CO₂(g) + H₂(g), ΔH < 0. Các tác động sau ảnh hưởng đến cân bằng như thế nào?', statements: [ { text: 'Tăng nhiệt độ làm cân bằng chuyển dịch theo chiều thuận.', answer: false}, { text: 'Tăng áp suất chung không làm chuyển dịch cân bằng.', answer: true}, { text: 'Thêm hơi nước vào hệ làm cân bằng chuyển dịch theo chiều thuận.', answer: true}, { text: 'Lấy bớt H₂ ra khỏi hệ làm cân bằng chuyển dịch theo chiều nghịch.', answer: false} ], explanation: 'Phản ứng thuận tỏa nhiệt và có tổng số mol khí không đổi.<br>1. Tăng nhiệt độ → CB dịch chuyển theo chiều thu nhiệt (nghịch) → Sai.<br>2. Tổng số mol khí trước và sau bằng nhau (1+1=1+1) → Áp suất không ảnh hưởng → Đúng.<br>3. Thêm H₂O (chất tham gia) → CB dịch chuyển theo chiều thuận → Đúng.<br>4. Lấy bớt H₂ (sản phẩm) → CB dịch chuyển theo chiều thuận để tạo thêm H₂ → Sai.' },
+                { type: 'tf', topic: 'Hằng số cân bằng', question: 'Xét các phát biểu sau:', statements: [ { text: 'Phản ứng một chiều có hằng số cân bằng vô cùng lớn.', answer: true}, { text: 'Khi đảo ngược một phản ứng, hằng số cân bằng mới là nghịch đảo của hằng số cân bằng cũ.', answer: true}, { text: 'Hằng số cân bằng cho biết phản ứng có tự xảy ra được hay không.', answer: false}, { text: 'Nồng độ chất rắn ảnh hưởng đến giá trị hằng số cân bằng.', answer: false} ], explanation: '1. Về mặt lý thuyết, phản ứng một chiều được coi là có K<sub>C</sub> → ∞, tức là sản phẩm chiếm ưu thế tuyệt đối → Đúng.<br>2. K<sub>nghịch</sub> = 1/K<sub>thuận</sub> → Đúng.<br>3. K<sub>C</sub> chỉ cho biết mức độ phản ứng tại cân bằng, không cho biết khả năng tự xảy ra (đây là lĩnh vực của năng lượng tự do Gibbs) → Sai.<br>4. Nồng độ chất rắn được coi là hằng số và không đưa vào biểu thức K<sub>C</sub> → Sai.' },
+                { type: 'tf', topic: 'Sự điện li', question: 'Xét các dung dịch sau:', statements: [ { text: 'Dung dịch đường saccharose (C₁₂H₂₂O₁₁) dẫn điện.', answer: false}, { text: 'Nước mưa có tính acid do có hòa tan CO₂.', answer: true}, { text: 'Dung dịch NaF có môi trường base.', answer: true}, { text: 'Khi cho Mg vào dung dịch HCl, tốc độ thoát khí chậm hơn khi cho vào dung dịch CH₃COOH cùng nồng độ.', answer: false} ], explanation: '1. Đường là chất không điện li → Sai.<br>2. CO₂ + H₂O ⇌ H₂CO₃; H₂CO₃ là acid yếu làm pH nước mưa < 7 → Đúng.<br>3. NaF là muối của base mạnh (NaOH) và acid yếu (HF), ion F⁻ bị thủy phân tạo môi trường base → Đúng.<br>4. HCl là acid mạnh có [H⁺] cao hơn, phản ứng nhanh hơn acid yếu CH₃COOH → Sai.' },
+                { type: 'tf', topic: 'Thuyết Acid-Base', question: 'Xét các cặp chất/ion sau:', statements: [ { text: 'Cặp acid-base liên hợp của H₂PO₄⁻ là H₃PO₄ và HPO₄²⁻.', answer: true}, { text: 'Trong dung dịch, ion Zn²⁺ là một acid Lewis.', answer: true}, { text: 'Tất cả các chất có chứa hydrogen đều là acid Brønsted-Lowry.', answer: false}, { text: 'Phản ứng trung hòa luôn có pH tại điểm tương đương bằng 7.', answer: false} ], explanation: '1. H₂PO₄⁻ nhận H⁺ thành H₃PO₄ (acid liên hợp) và cho H⁺ thành HPO₄²⁻ (base liên hợp) → Đúng.<br>2. Ion kim loại như Zn²⁺ có orbital trống, có thể nhận cặp electron (ví dụ từ H₂O), do đó là acid Lewis → Đúng.<br>3. Ví dụ CH₄ có hydrogen nhưng không có khả năng cho H⁺ → Sai.<br>4. Chỉ phản ứng giữa acid mạnh và base mạnh mới có pH = 7 tại điểm tương đương. Các trường hợp khác có pH > 7 hoặc < 7 → Sai.' },
+                { type: 'short', topic: 'Tính toán CBHH', question: 'Cho phản ứng H₂(g) + I₂(g) ⇌ 2HI(g) có K<sub>C</sub>=50. Nếu nồng độ ban đầu của H₂ và I₂ đều là 0.5M, nồng độ HI tại cân bằng là bao nhiêu (M)? (Làm tròn 2 chữ số thập phân)', answer: '0,78', explanation: 'H₂ + I₂ ⇌ 2HI. Gọi x là nồng độ H₂ pư. Tại CB: [H₂]=[I₂]=0.5-x; [HI]=2x. K<sub>C</sub>=(2x)²/(0.5-x)²=50. Lấy căn 2 vế: 2x/(0.5-x) = √50 ≈ 7.07. => 2x = 3.535 - 7.07x => 9.07x = 3.535 => x≈0.39. Vậy [HI]=2x ≈ 0.78M.' },
+                { type: 'short', topic: 'Lý thuyết đếm', question: 'Cho các cân bằng sau trong bình kín: (1) 2NH₃ ⇌ N₂ + 3H₂ (ΔH > 0), (2) 2SO₂ + O₂ ⇌ 2SO₃ (ΔH < 0), (3) H₂ + I₂ ⇌ 2HI (ΔH < 0). Có bao nhiêu cân bằng dịch chuyển theo chiều thuận khi đồng thời tăng nhiệt độ và giảm áp suất?', answer: '1', explanation: 'Tăng nhiệt độ → CB dịch chuyển theo chiều thu nhiệt. Giảm áp suất → CB dịch chuyển theo chiều tăng số mol khí.<br>(1) Thu nhiệt (ΔH>0), tăng mol khí (2→4) → Dịch chuyển thuận.<br>(2) Tỏa nhiệt (ΔH<0), giảm mol khí (3→2) → Dịch chuyển nghịch.<br>(3) Tỏa nhiệt (ΔH<0), số mol khí không đổi → Dịch chuyển nghịch (do nhiệt độ).<br>Vậy chỉ có 1 cân bằng thỏa mãn.' },
+                { type: 'short', topic: 'Tính toán CBHH', question: 'Cho K<sub>C</sub> của phản ứng N₂(g) + O₂(g) ⇌ 2NO(g) là 4,0.10⁻⁴. Tính K<sub>C</sub> của phản ứng NO(g) ⇌ ½N₂(g) + ½O₂(g).', answer: '50', explanation: 'Phản ứng 2NO ⇌ N₂ + O₂ có K\'<sub>C</sub> = 1 / (4.10⁻⁴) = 2500. Phản ứng NO ⇌ ½N₂ + ½O₂ có K\'\'<sub>C</sub> = √(K\'<sub>C</sub>) = √2500 = 50.' },
+                { type: 'short', topic: 'Tính toán pH', question: 'Trộn 100ml dung dịch HCl 0,1M với 100ml dung dịch NaOH 0,08M. Tính pH của dung dịch thu được.', answer: '2', explanation: 'n(H⁺) = 0.1*0.1=0.01 mol. n(OH⁻) = 0.1*0.08=0.008 mol. H⁺ dư = 0.002 mol. V(dd) = 200ml = 0.2L. [H⁺]dư = 0.002/0.2 = 0.01M. pH = -log(0.01) = 2.' },
+                { type: 'short', topic: 'Lý thuyết đếm', question: 'Có bao nhiêu chất trong dãy sau là chất điện li yếu: H₂S, H₂SO₃, H₂SO₄, Mg(OH)₂, NaCl, HF?', answer: '4', explanation: 'Các chất điện li yếu trong dãy là: H₂S (acid yếu), H₂SO₃ (acid yếu), Mg(OH)₂ (base yếu, ít tan), HF (acid yếu). H₂SO₄ là acid mạnh, NaCl là muối (điện li mạnh). Vậy có 4 chất.' },
+                { type: 'short', topic: 'Tính toán pH', question: 'Dung dịch acid formic (HCOOH) 0,1M có độ điện li là 1%. Tính pH của dung dịch này.', answer: '3', explanation: '[H⁺] = Cₐ × α = 0.1 × 1% = 0.1 × 0.01 = 0.001 M = 10⁻³ M. pH = -log(10⁻³) = 3.' }
+            ]
+        };
+
+        const topicExerciseSuggestions = {
+            'Khái niệm CBHH': 'Ôn lại định nghĩa phản ứng thuận nghịch và trạng thái cân bằng động.',
+            'Hằng số cân bằng': 'Luyện tập viết biểu thức K<sub>C</sub> cho các loại phản ứng (có/không có chất rắn) và hiểu ý nghĩa của giá trị K<sub>C</sub>.',
+            'Chuyển dịch cân bằng': 'Làm các bài tập vận dụng nguyên lí Le Chatelier để xác định chiều chuyển dịch khi thay đổi nồng độ, nhiệt độ, áp suất.',
+            'Nguyên lí Le Chatelier': 'Làm các bài tập vận dụng nguyên lí Le Chatelier để xác định chiều chuyển dịch khi thay đổi nồng độ, nhiệt độ, áp suất.',
+            'Tính toán CBHH': 'Giải các bài toán tính K<sub>C</sub> dựa vào nồng độ các chất ở trạng thái cân bằng hoặc ngược lại.',
+            'Sự điện li': 'Viết phương trình điện li, phân loại các chất điện li (mạnh, yếu, không điện li), và giải thích tại sao dung dịch dẫn điện.',
+            'Thuyết Acid-Base': 'Xác định acid, base trong một phản ứng theo thuyết Brønsted-Lowry.',
+            'pH': 'Luyện tập các dạng bài tính pH, pOH từ nồng độ [H<sup>+</sup>], [OH<sup>-</sup>] và ngược lại. Xác định môi trường của dung dịch muối.',
+            'Cân bằng ion': 'Viết phương trình thuỷ phân của các ion trong nước và xác định môi trường của dung dịch muối.',
+            'Lý thuyết đếm': 'Ôn tập kỹ lý thuyết và đọc kỹ câu hỏi để xác định đúng số phát biểu/chất thỏa mãn điều kiện.',
+            'Tính toán pH': 'Luyện tập các dạng bài tính pH, pOH từ nồng độ [H<sup>+</sup>], [OH<sup>-</sup>] cho các acid/base mạnh.'
+        };
+
+        // --- CODE LOGIC CỦA ỨNG DỤNG ---
+        let currentTestSetKey = '';
+        let currentQuestions = [];
+        let userAnswers = {};
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let timeLeft = 3000; // 50 phút = 3000 giây
+        let studentInfo = {};
+
+        const startScreen = document.getElementById('start-screen');
+        const testScreen = document.getElementById('test-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionsContainer = document.getElementById('questions-container');
+        const timerDisplay = document.getElementById('timer');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        window.onload = () => {
+            const savedProgress = localStorage.getItem('chemTestProgress');
+            if (savedProgress) {
+                document.getElementById('resume-modal').style.display = 'flex';
+            }
+        };
+
+        function startTest(setNumber) {
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value.trim();
+
+            if (!studentName || !studentClass) {
+                alert('Vui lòng nhập đầy đủ Họ và tên và Lớp.');
+                return;
+            }
+
+            studentInfo = { name: studentName, class: studentClass, set: setNumber };
+            currentTestSetKey = `de${setNumber}`;
+            currentQuestions = allQuestions[currentTestSetKey];
+            userAnswers = {};
+            currentQuestionIndex = 0;
+            
+            startScreen.classList.add('hidden');
+            testScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            document.getElementById('test-set-number').innerText = setNumber;
+
+            renderQuestionPalette();
+            renderQuestion();
+            startTimer();
+            saveProgress();
+        }
+
+        function renderQuestion(isReview = false) {
+            questionsContainer.innerHTML = '';
+            const q = currentQuestions[currentQuestionIndex];
+            let html = `<div class="question-card" id="q-${currentQuestionIndex}">`;
+            const questionNumber = currentQuestionIndex + 1;
+
+            // --- Phần tiêu đề câu hỏi ---
+            let partTitle = '';
+            if (questionNumber >= 1 && questionNumber <= 18) partTitle = 'Phần I: Trắc nghiệm 4 đáp án';
+            else if (questionNumber >= 19 && questionNumber <= 22) partTitle = 'Phần II: Trắc nghiệm Đúng/Sai';
+            else if (questionNumber >= 23 && questionNumber <= 28) partTitle = 'Phần III: Trả lời ngắn';
+            
+            html += `<p class="text-sm font-semibold text-blue-600 mb-2">${partTitle}</p>`;
+            html += `<h3 class="text-lg font-semibold mb-4">Câu ${questionNumber}: ${q.question}</h3>`;
+
+            // --- Phần nội dung câu hỏi ---
+            if (q.type === 'mcq') {
+                q.options.forEach((option, index) => {
+                    const optionLetter = String.fromCharCode(65 + index);
+                    const isChecked = userAnswers[currentQuestionIndex] === optionLetter;
+                    let reviewClass = '';
+                    if (isReview) {
+                        if (optionLetter === q.answer) reviewClass = 'correct-answer';
+                        if (isChecked && optionLetter !== q.answer) reviewClass = 'selected-incorrect';
+                    }
+                    html += `
+                        <div>
+                            <input type="radio" id="q${currentQuestionIndex}o${index}" name="q${currentQuestionIndex}" value="${optionLetter}" ${isChecked ? 'checked' : ''} onchange="saveAnswer()" class="hidden" ${isReview ? 'disabled' : ''}>
+                            <label for="q${currentQuestionIndex}o${index}" class="option-label ${reviewClass}"><strong>${optionLetter}.</strong> ${option}</label>
+                        </div>
+                    `;
+                });
+            } else if (q.type === 'tf') {
+                q.statements.forEach((statement, index) => {
+                    const currentAnswer = userAnswers[currentQuestionIndex] ? userAnswers[currentQuestionIndex][index] : null;
+                    let reviewClassTrue = '', reviewClassFalse = '';
+                    if (isReview) {
+                        if (statement.answer === true) reviewClassTrue = 'correct-answer';
+                        if (statement.answer === false) reviewClassFalse = 'correct-answer';
+                        if (currentAnswer === true && statement.answer === false) reviewClassTrue = 'selected-incorrect';
+                        if (currentAnswer === false && statement.answer === true) reviewClassFalse = 'selected-incorrect';
+                    }
+                    html += `
+                        <div class="flex items-center justify-between p-4 border rounded-lg mb-3">
+                            <p>${index+1}. ${statement.text}</p>
+                            <div class="flex space-x-2">
+                                 <input type="radio" id="q${currentQuestionIndex}s${index}t" name="q${currentQuestionIndex}s${index}" value="true" ${currentAnswer === true ? 'checked' : ''} onchange="saveAnswer()" class="hidden" ${isReview ? 'disabled' : ''}>
+                                 <label for="q${currentQuestionIndex}s${index}t" class="px-4 py-2 rounded-md cursor-pointer tf-label ${reviewClassTrue}">Đúng</label>
+                                 
+                                 <input type="radio" id="q${currentQuestionIndex}s${index}f" name="q${currentQuestionIndex}s${index}" value="false" ${currentAnswer === false ? 'checked' : ''} onchange="saveAnswer()" class="hidden" ${isReview ? 'disabled' : ''}>
+                                 <label for="q${currentQuestionIndex}s${index}f" class="px-4 py-2 rounded-md cursor-pointer tf-label ${reviewClassFalse}">Sai</label>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else if (q.type === 'short') {
+                const value = userAnswers[currentQuestionIndex] || '';
+                let reviewClass = '';
+                if (isReview) {
+                     reviewClass = (String(value).trim().replace(',', '.') === String(q.answer).replace(',', '.')) ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50';
+                }
+                html += `
+                    <div class="flex items-center space-x-4">
+                        <p class="font-semibold">Đáp án:</p>
+                        <input type="text" maxlength="4" class="short-answer-input ${reviewClass}" value="${value}" oninput="saveAnswer()" ${isReview ? 'disabled' : ''}>
+                        ${isReview && String(value).trim().replace(',', '.') !== String(q.answer).replace(',', '.') ? `<p class="text-green-600 font-bold">Đáp án đúng: ${q.answer}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            // --- Phần giải thích đáp án ---
+            if (isReview && q.explanation) {
+                html += `
+                    <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                        <p class="font-bold text-blue-800">💡 Giải thích chi tiết:</p>
+                        <p class="text-gray-700 mt-2">${q.explanation}</p>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            questionsContainer.innerHTML = html;
+            updateNavigation();
+            updateProgress();
+            updateQuestionPalette();
+        }
+
+        function saveAnswer() {
+            const q = currentQuestions[currentQuestionIndex];
+            if (q.type === 'mcq') {
+                const selected = document.querySelector(`input[name="q${currentQuestionIndex}"]:checked`);
+                if (selected) userAnswers[currentQuestionIndex] = selected.value;
+            } else if (q.type === 'tf') {
+                userAnswers[currentQuestionIndex] = userAnswers[currentQuestionIndex] || {};
+                q.statements.forEach((_, index) => {
+                    const selected = document.querySelector(`input[name="q${currentQuestionIndex}s${index}"]:checked`);
+                    if (selected) userAnswers[currentQuestionIndex][index] = selected.value === 'true';
+                });
+            } else if (q.type === 'short') {
+                const input = document.querySelector(`#q-${currentQuestionIndex} input[type="text"]`);
+                userAnswers[currentQuestionIndex] = input.value;
+            }
+            saveProgress();
+            updateProgress();
+            updateQuestionPalette();
+        }
+
+        function navigateQuestion(direction) {
+            const newIndex = currentQuestionIndex + direction;
+            if (newIndex >= 0 && newIndex < currentQuestions.length) {
+                currentQuestionIndex = newIndex;
+                renderQuestion();
+            }
+        }
+
+        function updateNavigation() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === currentQuestions.length - 1;
+            prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
+            nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).filter(k => {
+                const answer = userAnswers[k];
+                if (typeof answer === 'object' && answer !== null) {
+                    return Object.keys(answer).length === currentQuestions[k].statements.length;
+                }
+                return answer !== undefined && answer !== null && answer !== '';
+            }).length;
+            
+            const totalQuestions = currentQuestions.length;
+            document.getElementById('progress-text').innerText = `${answeredCount}/${totalQuestions} câu`;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        function confirmSubmission() {
+            const unanswered = [];
+            currentQuestions.forEach((q, index) => {
+                const answer = userAnswers[index];
+                let isAnswered = true;
+                if (answer === undefined || answer === null || answer === '') {
+                    isAnswered = false;
+                } else if (q.type === 'tf') {
+                     if (Object.keys(answer).length < q.statements.length) {
+                        isAnswered = false;
+                     }
+                }
+                if (!isAnswered) {
+                    unanswered.push(index + 1);
+                }
+            });
+
+            if (unanswered.length > 0) {
+                document.getElementById('warning-text').innerText = `Bạn chưa hoàn thành các câu: ${unanswered.join(', ')}. Bạn có chắc chắn muốn nộp bài không?`;
+                document.getElementById('warning-modal').style.display = 'flex';
+            } else {
+                submitTest();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function submitTest(force = false) {
+            closeModal('warning-modal');
+            clearInterval(timerInterval);
+            testScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            let score = 0;
+            let correctCount = 0;
+            const topicAnalysis = {};
+            const totalQuestions = currentQuestions.length;
+
+            currentQuestions.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                let isCorrect = false;
+                const topic = q.topic;
+                topicAnalysis[topic] = topicAnalysis[topic] || { correct: 0, total: 0 };
+                topicAnalysis[topic].total++;
+
+                if (q.type === 'mcq' || q.type === 'short') {
+                    if (userAnswer !== undefined && userAnswer !== null && String(userAnswer).trim().replace(',', '.') == String(q.answer).replace(',', '.')) {
+                        isCorrect = true;
+                    }
+                } else if (q.type === 'tf') {
+                    let allCorrect = true;
+                    if (userAnswer && Object.keys(userAnswer).length === q.statements.length) {
+                        q.statements.forEach((s, sIndex) => {
+                            if (userAnswer[sIndex] !== s.answer) {
+                                allCorrect = false;
+                            }
+                        });
+                    } else {
+                        allCorrect = false;
+                    }
+                    if(allCorrect) isCorrect = true;
+                }
+
+                if (isCorrect) {
+                    correctCount++;
+                    topicAnalysis[topic].correct++;
+                }
+            });
+
+            score = ((correctCount / totalQuestions) * 10).toFixed(2);
+            
+            // Generate feedback text for Google Sheets and display
+            let strengths = [];
+            let weaknesses = [];
+            const allTopics = [...new Set(currentQuestions.map(q => q.topic))];
+            
+            allTopics.forEach(topic => {
+                 const stats = topicAnalysis[topic] || { correct: 0, total: 0 };
+                 if (stats.total > 0) {
+                    const percentage = (stats.correct / stats.total) * 100;
+                    if (percentage >= 75) {
+                        strengths.push(topic);
+                    } else {
+                        weaknesses.push(topic);
+                    }
+                 }
+            });
+
+            const strengthsText = strengths.length > 0 ? `Nắm vững kiến thức về: ${strengths.join(', ')}.` : 'Cần cố gắng hơn ở tất cả các mảng kiến thức.';
+            const weaknessSuggestionsHTML = weaknesses.length > 0
+                ? weaknesses.map(topic => `<li><strong class="font-semibold">${topic}:</strong> ${topicExerciseSuggestions[topic] || 'Cần xem lại kiến thức nền.'}</li>`).join('')
+                : '<li>Em đã nắm vững các kiến thức trong chương. Hãy tiếp tục phát huy!</li>';
+            
+            const learningPathTextForSheet = weaknesses.length > 0
+                ? weaknesses.map(topic => `${topic}: ${topicExerciseSuggestions[topic] || 'Cần xem lại kiến thức nền.'}`).join('\n')
+                : 'Em đã nắm vững các kiến thức trong chương. Hãy tiếp tục phát huy!';
+
+            displayResults(score, correctCount, totalQuestions, strengthsText, weaknessSuggestionsHTML);
+            sendToGoogleSheets(score, correctCount, totalQuestions, strengthsText, learningPathTextForSheet); 
+            
+            localStorage.removeItem('chemTestProgress');
+        }
+
+        function displayResults(score, correctCount, total, strengthsText, weaknessSuggestionsHTML) {
+            // Summary
+            const summaryEl = document.getElementById('result-summary');
+            summaryEl.innerHTML = `
+                <p class="text-xl">Họ và tên: <span class="font-bold">${studentInfo.name}</span> - Lớp: <span class="font-bold">${studentInfo.class}</span></p>
+                <p class="text-4xl font-bold my-4 ${score >= 5 ? 'text-green-600' : 'text-red-600'}">${score} / 10</p>
+                <p class="text-lg">Số câu đúng: <span class="font-bold">${correctCount} / ${total}</span></p>
+            `;
+
+            // Feedback table
+            const feedbackEl = document.getElementById('feedback-table-container');
+            let feedbackHTML = `
+                <h3 class="text-xl font-bold mt-6 mb-2 text-gray-800">Đánh giá chi tiết</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border rounded-lg">
+                        <tbody>
+                            <tr class="border-b"><td class="px-4 py-3 font-semibold w-1/3 align-top">Đề số</td><td class="px-4 py-3">${studentInfo.set}</td></tr>
+                            <tr class="border-b"><td class="px-4 py-3 font-semibold align-top">Ưu điểm</td><td class="px-4 py-3 text-green-700">${strengthsText}</td></tr>
+                            <tr class="border-b"><td class="px-4 py-3 font-semibold align-top">Lộ trình rèn luyện</td><td class="px-4 py-3">
+                                <p class="mb-2">Để cải thiện kết quả, em hãy tập trung vào các dạng bài tập sau:</p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-800">
+                                    ${weaknessSuggestionsHTML}
+                                </ul>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            feedbackEl.innerHTML = feedbackHTML;
+
+            // Review section
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+            const oldIndex = currentQuestionIndex;
+            currentQuestions.forEach((q, index) => {
+                currentQuestionIndex = index;
+                renderQuestion(true);
+                reviewContainer.appendChild(questionsContainer.firstElementChild);
+            });
+            currentQuestionIndex = oldIndex;
+        }
+
+        function sendToGoogleSheets(score, correctCount, total, strengths, learningPath) {
+            // !!! QUAN TRỌNG: URL API CỦA BẠN ĐÃ ĐƯỢC CẬP NHẬT VỚI PHƯƠNG PHÁP MỚI !!!
+            const apiUrl = 'https://script.google.com/macros/s/AKfycbwuNA0XXBdO12ALe3CF3__-qv6x0J5N0GXqr3XObibg8y30IN6nt9eBSoiiZ6Ts6zAb/exec';
+
+            // Tạo một form động và ẩn để gửi dữ liệu
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = apiUrl;
+            form.style.display = 'none'; // Ẩn form này đi
+
+            // Dữ liệu cần gửi
+            const data = {
+                submissionTime: new Date().toLocaleString('vi-VN'),
+                'class': studentInfo.class,
+                name: studentInfo.name,
+                set: studentInfo.set,
+                score: score,
+                correctRatio: `${correctCount}/${total}`,
+                strengths: strengths,
+                learningPath: learningPath
+            };
+
+            // Tạo các trường input ẩn cho mỗi mục dữ liệu
+            for (const key in data) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = data[key];
+                form.appendChild(input);
+            }
+
+            // Tạo một iframe ẩn để làm mục tiêu cho form, tránh việc trang bị tải lại
+            const iframe = document.createElement('iframe');
+            iframe.name = 'hidden-iframe';
+            iframe.id = 'hidden-iframe';
+            iframe.style.display = 'none';
+            
+            document.body.appendChild(iframe);
+            form.target = iframe.name;
+
+            document.body.appendChild(form);
+            
+            // Gửi form
+            form.submit();
+
+            // Dọn dẹp form và iframe sau khi gửi
+            setTimeout(() => {
+                document.body.removeChild(form);
+                document.body.removeChild(iframe);
+                console.log('Dữ liệu đã được gửi đi. Vui lòng kiểm tra Google Sheet.');
+            }, 1500); // Đợi 1.5 giây để đảm bảo form đã được gửi đi
+        }
+
+
+        function restartTest() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            timeLeft = 3000;
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+        }
+
+        // --- Local Storage Functions ---
+        function saveProgress() {
+            const progress = {
+                studentInfo,
+                currentTestSetKey,
+                currentQuestionIndex,
+                userAnswers,
+                timeLeft,
+            };
+            localStorage.setItem('chemTestProgress', JSON.stringify(progress));
+        }
+
+        function resumeProgress() {
+            const savedProgress = JSON.parse(localStorage.getItem('chemTestProgress'));
+            
+            studentInfo = savedProgress.studentInfo;
+            currentTestSetKey = savedProgress.currentTestSetKey;
+            currentQuestions = allQuestions[currentTestSetKey];
+            currentQuestionIndex = savedProgress.currentQuestionIndex;
+            userAnswers = savedProgress.userAnswers;
+            timeLeft = savedProgress.timeLeft;
+            
+            document.getElementById('student-name').value = studentInfo.name;
+            document.getElementById('student-class').value = studentInfo.class;
+
+            startScreen.classList.add('hidden');
+            testScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            document.getElementById('test-set-number').innerText = studentInfo.set;
+
+            renderQuestionPalette();
+            renderQuestion();
+            startTimer();
+            closeModal('resume-modal');
+        }
+
+        function discardProgress() {
+            localStorage.removeItem('chemTestProgress');
+            closeModal('resume-modal');
+        }
+
+        function renderQuestionPalette() {
+            const palette = document.getElementById('question-palette');
+            palette.innerHTML = '';
+            currentQuestions.forEach((_, index) => {
+                const button = document.createElement('button');
+                button.className = 'palette-btn';
+                button.innerText = index + 1;
+                button.id = `palette-btn-${index}`;
+                button.onclick = () => jumpToQuestion(index);
+                palette.appendChild(button);
+            });
+        }
+
+        function jumpToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        }
+
+        function updateQuestionPalette() {
+            currentQuestions.forEach((q, index) => {
+                const button = document.getElementById(`palette-btn-${index}`);
+                if (!button) return;
+
+                button.classList.remove('current', 'answered');
+
+                // Đánh dấu câu hỏi hiện tại
+                if (index === currentQuestionIndex) {
+                    button.classList.add('current');
+                }
+
+                // Đánh dấu câu hỏi đã trả lời
+                const answer = userAnswers[index];
+                let isAnswered = false;
+                if (answer !== undefined && answer !== null && answer !== '') {
+                    if (q.type === 'tf') {
+                         if (Object.keys(answer).length === q.statements.length) {
+                            isAnswered = true;
+                         }
+                    } else {
+                        isAnswered = true;
+                    }
+                }
+
+                if (isAnswered) {
+                    button.classList.add('answered');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
